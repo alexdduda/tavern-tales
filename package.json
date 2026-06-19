@@ -1,0 +1,22 @@
+{
+  "name": "tavern-tales",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "An AI-powered adventure drinking game for 2-8 players. D&D meets Mafia meets Jackbox.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "sim": "node sim.mjs"
+  },
+  "dependencies": {
+    "lucide-react": "^0.383.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^8.0.16"
+  }
+}
