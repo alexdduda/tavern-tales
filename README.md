@@ -135,6 +135,22 @@ Notes:
 - First AI beat is slow while gemma4 loads into memory (~30s); after that it's quick.
 - macOS may ask to allow incoming connections the first time — say yes.
 
+### Friends in other cities (over the internet)
+
+Same as above, but expose your laptop with a free [Cloudflare quick tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/do-more-with-tunnels/trycloudflare/) — no account, no router config.
+
+```bash
+brew install cloudflared   # once
+
+npm run dev                # terminal 1 — keep running
+npm run tunnel             # terminal 2 — keep running
+```
+
+`npm run tunnel` prints a public URL like `https://random-words.trycloudflare.com`. **Share that** instead of the LAN IP — friends anywhere open it and join with the room code. Everything (game state + the gemma4 AI) still runs only on your laptop; the tunnel just forwards to it.
+
+- The tunnel URL changes every time you restart it — share the current one.
+- Both terminals must stay open and the laptop awake for the whole game.
+
 ---
 
 ## Project Structure

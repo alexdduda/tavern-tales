@@ -50,6 +50,9 @@ export default defineConfig({
   server: {
     port: 5174,
     host: true,
+    // Allow the Cloudflare quick-tunnel host so internet play works
+    // (`npm run tunnel`). LAN IPs are allowed by default.
+    allowedHosts: [".trycloudflare.com"],
     // Proxy the local Ollama server so the browser calls same-origin "/ollama"
     // and never hits CORS. The AI client (src/ai/client.js) targets "/ollama".
     proxy: {
