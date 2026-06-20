@@ -9,7 +9,8 @@ A React drinking/adventure game. Game logic, UI, and the state machine live in
 
 ## Architecture at a glance
 - **No router.** A `screen` state value (`S.HOME`, `S.RULES`, `S.CHAR`, `S.LOBBY`, `S.DM`, `S.GAME`) drives which screen renders.
-- **State lives in shared storage**, polled every 2.2s. The host writes; clients read and mirror.
+- **State lives in shared storage**, polled every 2.2s. The host writes; clients read and mirror. The game calls `window.storage` directly; `main.jsx` installs the `src/storage.js` adapter onto it at startup (unless the sandbox already provided one).
+- **Multiplayer store**: `storage.js` talks to a same-origin `/store` endpoint served by the `tavernSync` plugin in `vite.config.js` (in-memory KV). Works across any device on the LAN with no accounts. For internet play, tunnel the dev server or swap `storage.js` for Supabase.
 - **The host is authoritative** — only the host calls the AI, rolls dice, and resolves beats. Clients submit votes/bets into shared state.
 - **AI layer** (`src/ai/`) runs a **local model via Ollama** (default `gemma4`) — no API key, no per-token cost, nothing leaves the machine:
   - `client.js` — transport. `aiChat(system, messages, tokens)` hits Ollama `/api/chat` with `format:"json"` and `think:false` (gemma is a reasoning model; left on, its hidden reasoning eats the token budget and `content` returns empty). Plus `safeJ`.
@@ -29,7 +30,7 @@ A React drinking/adventure game. Game logic, UI, and the state machine live in
 
 ## Before deploying (see README)
 1. Run Ollama where the app can reach it (or point `VITE_OLLAMA_URL` at a hosted model gateway).
-2. Replace the localStorage shim in `src/storage.js` with Supabase for real multiplayer.
+2. LAN play works as-is (built-in `/store`). For internet play, tunnel the dev server or swap `src/storage.js` for Supabase.
 
 ## Common tasks
 - **Tune difficulty:** edit the `TIERS` array (dice → drinks/HP mapping).

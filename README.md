@@ -85,12 +85,14 @@ Gemma is a reasoning model, so `client.js` sends `think:false` (otherwise the hi
 
 ### 2. Multiplayer Backend (`src/storage.js`)
 
-The game syncs state via `window.storage`. The included `storage.js` falls back to **localStorage**, which only works for **pass-the-phone on one browser**.
+The game syncs state via `window.storage`. **This works out of the box for same-network play** — a tiny shared key-value store (`tavernSync` in `vite.config.js`) is baked into the dev server, and `storage.js` points at its `/store` endpoint. No accounts, no API keys.
 
-For real separate-device play, swap in **Supabase** (free tier is plenty):
+So for friends **in the same room / on the same WiFi**, there's nothing to set up — see [Playing With Friends](#-playing-with-friends) below.
+
+> State lives in memory, so restarting the dev server clears all rooms (fine for a session). For **cross-internet play** (friends in other cities), either expose the dev server with a tunnel (e.g. `cloudflared tunnel --url http://localhost:5174`) or swap `storage.js` for **Supabase** (free tier is plenty):
 
 ```js
-// src/storage.js — Supabase version
+// src/storage.js — Supabase version (only needed for play across the internet)
 import { createClient } from "@supabase/supabase-js";
 const sb = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY);
 
@@ -106,14 +108,32 @@ export const storage = {
 };
 ```
 
-Create one table:
 ```sql
 create table rooms (key text primary key, value text, updated_at timestamptz default now());
 alter table rooms enable row level security;
 create policy "public" on rooms for all using (true) with check (true);
 ```
 
-Then in `TavernTales.jsx`, replace `window.storage` references with an import from `./storage.js`.
+---
+
+## 🎲 Playing With Friends
+
+Everyone on the **same WiFi**, each on their own phone — zero extra setup:
+
+1. **On your (the host's) laptop**, start everything:
+   ```bash
+   ollama pull gemma4   # once
+   npm install          # once
+   npm run dev
+   ```
+   Vite prints a **Network** URL like `http://192.168.1.89:5174/`.
+2. **Friends open that Network URL** on their phones (same WiFi). Everyone joins the same 4-letter room code.
+3. Play. Only your laptop runs the AI (gemma4) and holds game state — friends' phones just read and submit moves, so they need nothing installed.
+
+Notes:
+- Keep the host laptop awake and on the same network for the whole game.
+- First AI beat is slow while gemma4 loads into memory (~30s); after that it's quick.
+- macOS may ask to allow incoming connections the first time — say yes.
 
 ---
 
