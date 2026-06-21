@@ -770,7 +770,7 @@ function LobbyScreen({roomCode,playerId,isHost,onBegin}) {
   useEffect(()=>{
     const poll=async()=>{
       const r=await load(roomCode);
-      if(r){setRoom(r);if(r.phase==="dm_setup"&&!isHost)onBegin(r);}
+      if(r){setRoom(r);if(r.phase!=="lobby"&&!isHost)onBegin(r);}
     };
     poll();const t=setInterval(poll,POLL_MS);return()=>clearInterval(t);
   },[]);
