@@ -5,3 +5,5 @@ dist
 .DS_Store
 *.log
 .vercel
+.tavern-store.json
+.tavern-store.json.tmp
