@@ -60,6 +60,12 @@ export default defineConfig({
         target: process.env.OLLAMA_HOST || "http://localhost:11434",
         changeOrigin: true,
         rewrite: (p) => p.replace(/^\/ollama/, ""),
+        // Ollama 403s any browser Origin that isn't localhost. When the app is
+        // reached over a tunnel the Origin is the public host, so strip it —
+        // Ollama then sees an ordinary server-side request and allows it.
+        configure: (proxy) => {
+          proxy.on("proxyReq", (proxyReq) => proxyReq.removeHeader("origin"));
+        },
       },
     },
   },
